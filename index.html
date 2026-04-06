@@ -1,1 +1,92 @@
-<h1>github pages</h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Restaurante</title>
+<style>
+body { font-family: Arial; padding: 20px; }
+button { margin: 5px; padding: 10px; cursor: pointer; }
+#mesas button { width: 100px; height: 80px; white-space: pre-line; }
+</style>
+</head>
+<body>
+
+<h2>🍽️ Sistema Restaurante</h2>
+
+<h3>Mozos</h3>
+<div id="mozos"></div>
+<p id="mozoSel">Mozo: ninguno</p>
+
+<h3>Mesas</h3>
+<div id="mesas"></div>
+
+<script>
+const mozos = {
+  "Anto": "lightblue",
+  "Marcia": "yellow",
+  "Eden": "lightgreen",
+  "Irma": "pink",
+  "Evelin": "violet"
+};
+
+let mozoActivo = null;
+let mesas = JSON.parse(localStorage.getItem("mesas")) || {};
+
+const contMozos = document.getElementById("mozos");
+
+for (let m in mozos) {
+  let btn = document.createElement("button");
+  btn.innerText = m;
+  btn.style.backgroundColor = mozos[m];
+  btn.onclick = () => {
+    mozoActivo = m;
+    document.getElementById("mozoSel").innerText = "Mozo: " + m;
+  };
+  contMozos.appendChild(btn);
+}
+
+function contarMesas(mozo) {
+  let c = 0;
+  for (let i in mesas) {
+    if (mesas[i] && mesas[i].mozo === mozo) c++;
+  }
+  return c;
+}
+
+const contMesas = document.getElementById("mesas");
+
+for (let i = 1; i <= 35; i++) {
+  let btn = document.createElement("button");
+  actualizar(btn, i);
+
+  btn.onclick = () => {
+    if (!mozoActivo) return alert("Seleccioná mozo");
+
+    if (!mesas[i]) {
+      if (contarMesas(mozoActivo) >= 5)
+        return alert("Máx 5 mesas por mozo");
+
+      mesas[i] = { mozo: mozoActivo, cuentas: [] };
+      guardar();
+    }
+
+    window.open("mesa.html?mesa=" + i, "_blank");
+  };
+
+  contMesas.appendChild(btn);
+}
+
+function actualizar(btn, i) {
+  if (mesas[i]) {
+    btn.innerText = "Mesa " + i + "\n" + mesas[i].mozo;
+    btn.style.backgroundColor = mozos[mesas[i].mozo];
+  } else btn.innerText = "Mesa " + i;
+}
+
+function guardar() {
+  localStorage.setItem("mesas", JSON.stringify(mesas));
+}
+</script>
+
+</body>
+</html>
